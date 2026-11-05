@@ -1,8 +1,5 @@
 from django.db import models
-
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
-
-
 
 
 
@@ -70,8 +67,5 @@ class User(AbstractBaseUser):
     def is_staff(self):
         "is a user a member of staff"
         return self.is_admin
-
-
-
 
 

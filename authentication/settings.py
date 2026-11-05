@@ -20,7 +20,6 @@ load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -140,8 +139,6 @@ MAILERS = {
 }
 
 
-
-
 REST_FRAMEWORK = {
     
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -152,8 +149,6 @@ REST_FRAMEWORK = {
 }
 
 AUTH_USER_MODEL = 'accounts.User'
-
-
 
 
 SIMPLE_JWT = {
@@ -181,3 +176,4 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
+
