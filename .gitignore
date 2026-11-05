@@ -1,0 +1,12 @@
+.env
+.env/
+.idea/
+.db.sqlite3
+.db.sqlite3/
+.sqlite3
+.venv
+.venv/
+venv
+media/
+*.sql
+*.sqlite3
