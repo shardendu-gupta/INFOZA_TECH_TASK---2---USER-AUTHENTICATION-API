@@ -46,7 +46,7 @@ class User(AbstractBaseUser):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    objects = UserManager
+    objects = UserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name', 'tc']
@@ -59,7 +59,7 @@ class User(AbstractBaseUser):
         return self.is_admin
 
 
-    def has_module_perm(self, app_label):
+    def has_module_perms(self, app_label):
         "Does tha user have a permissions to view the app 'app_label?' "
         return True
 

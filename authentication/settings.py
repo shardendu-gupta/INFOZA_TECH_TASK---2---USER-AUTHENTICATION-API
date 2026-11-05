@@ -148,7 +148,7 @@ REST_FRAMEWORK = {
     
 }
 
-AUTH_USER_MODEL = 'accounts.User'
+AUTH_USER_MODEL = 'api.User'
 
 
 SIMPLE_JWT = {
