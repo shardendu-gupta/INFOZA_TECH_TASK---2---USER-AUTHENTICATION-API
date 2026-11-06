@@ -13,5 +13,16 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         extra_kwargs={'write_only': True}
 
 
+    def validate(self, attrs):
 
-    
+        password = attrs.get('password')
+        password2 = attrs.get('password2')
+
+        if password != password2:
+            raise serializers.ValidationError("Password and confirm password does not match.")
+
+
+        return attrs
+
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)
