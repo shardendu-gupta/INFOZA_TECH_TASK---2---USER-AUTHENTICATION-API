@@ -46,5 +46,3 @@ class UserLoginView(APIView):
 
 
 
-
-
