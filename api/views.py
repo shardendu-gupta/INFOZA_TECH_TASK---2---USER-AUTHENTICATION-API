@@ -1,4 +1,4 @@
-from .serializers import UserRegistrationSerializer, UserLoginSerializer
+from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer
 from .models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -43,6 +43,8 @@ class UserLoginView(APIView):
 
 
 
-
-
+class UserProfileView(APIView):
+    def get (self, request, format=None):
+        serializer = UserProfileSerializer
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
