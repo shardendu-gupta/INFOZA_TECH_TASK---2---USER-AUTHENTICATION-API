@@ -69,11 +69,8 @@ class UserLogoutView(APIView):
         try:
             refresh_token = request.data.get('refresh')
             token = RefreshToken(refresh_token)
-
-            if str(token['user_id']) != str(request.user.pk):
-                return Response({'error': 'Invalid refresh token'}, status=status.HTTP_400_BAD_REQUEST)
-
             token.blacklist()
+
             return Response({'msg': 'logout success'}, status=status.HTTP_200_OK)
 
         except TokenError:
@@ -81,4 +78,3 @@ class UserLogoutView(APIView):
 
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
