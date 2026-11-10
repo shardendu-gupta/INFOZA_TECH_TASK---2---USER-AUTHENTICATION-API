@@ -6,7 +6,7 @@ from rest_framework import status
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-
+from rest_framework_simplejwt.exceptions import TokenError
 
 
 def get_tokens_for_user(user):
@@ -19,33 +19,66 @@ def get_tokens_for_user(user):
 
 class UserRegistrationView(APIView):
     def post(self, request, format=None):
-        serializer = UserRegistrationSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            user = serializer.save()
-            token = get_tokens_for_user(user)
-            return Response ({ 'token':token,  'msg': 'Registration success'}, status=status.HTTP_200_OK)
-        return Response (serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serializer = UserRegistrationSerializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                user = serializer.save()
+                token = get_tokens_for_user(user)
+                return Response ({ 'token':token,  'msg': 'Registration success'}, status=status.HTTP_200_OK)
+            return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response ({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLoginView(APIView):
     def post(self, request, format=None):
-        serializer = UserLoginSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            email = serializer.data.get('email')
-            password = serializer.data.get('password')
-            user = authenticate(email=email, password=password)
-            if user is not None:
-                token = get_tokens_for_user(user)
-                return Response({ 'token':token,  'msg': 'login success'}, status=status.HTTP_200_OK)
-            else:
-                return Response ({'error': {'non_field_errors': ['Email or password is not valid']}}, status=status.HTTP_404_NOT_FOUND)
-        return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serializer = UserLoginSerializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                email = serializer.data.get('email')
+                password = serializer.data.get('password')
+                user = authenticate(email=email, password=password)
+                if user is not None:
+                    token = get_tokens_for_user(user)
+                    return Response({ 'token':token,  'msg': 'login success'}, status=status.HTTP_200_OK)
+                else:
+                    return Response ({'error': {'non_field_errors': ['Email or password is not valid']}}, status=status.HTTP_404_NOT_FOUND)
+            return Response (serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+        except Exception as e:
+            return Response ({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
+
     def get (self, request, format=None):
-        serializer = UserProfileSerializer(request.user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        try:
+            serializer = UserProfileSerializer(request.user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response ({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserLogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        try:
+            refresh_token = request.data.get('refresh')
+            token = RefreshToken(refresh_token)
+
+            if str(token['user_id']) != str(request.user.pk):
+                return Response({'error': 'Invalid refresh token'}, status=status.HTTP_400_BAD_REQUEST)
+
+            token.blacklist()
+            return Response({'msg': 'logout success'}, status=status.HTTP_200_OK)
+
+        except TokenError:
+            return Response({'error': 'Invalid or expired token'}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
